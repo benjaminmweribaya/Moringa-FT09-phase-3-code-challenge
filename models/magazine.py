@@ -1,4 +1,6 @@
 import sqlite3
+from models.article import Article
+from models.author import Author
 from database.connection import get_connection
 
 class Magazine:
@@ -92,24 +94,24 @@ class Magazine:
         connection = get_connection()
         cursor = connection.cursor()
         cursor.execute('''
-            SELECT * FROM articles
+            SELECT id FROM articles
             WHERE magazine_id = ?
         ''', (self.id,))
-        articles = cursor.fetchall()
+        article_ids = cursor.fetchall()
         connection.close()
-        return articles
+        return [Article(id=article_id[0]) for article_id in article_ids]
 
     def contributors(self):
         connection = get_connection()
         cursor = connection.cursor()
         cursor.execute('''
-            SELECT DISTINCT authors.* FROM authors
+            SELECT DISTINCT authors.id FROM authors
             JOIN articles ON authors.id = articles.author_id
             WHERE articles.magazine_id = ?
         ''', (self.id,))
-        contributors = cursor.fetchall()
+        author_ids = cursor.fetchall()
         connection.close()
-        return contributors
+        return [Author(id=author_id[0]) for author_id in author_ids]
 
     def article_titles(self):
         connection = get_connection()
@@ -126,12 +128,12 @@ class Magazine:
         connection = get_connection()
         cursor = connection.cursor()
         cursor.execute('''
-            SELECT authors.* FROM authors
+            SELECT authors.id FROM authors
             JOIN articles ON authors.id = articles.author_id
             WHERE articles.magazine_id = ?
             GROUP BY authors.id
             HAVING COUNT(articles.id) > 2
         ''', (self.id,))
-        authors = cursor.fetchall()
+        author_ids = cursor.fetchall()
         connection.close()
-        return authors if authors else None
+        return [Author(id=author_id[0]) for author_id in author_ids]

@@ -13,7 +13,12 @@ def main():
     magazine_name = input("Enter magazine name: ")
     magazine_category = input("Enter magazine category: ")
     article_title = input("Enter article title: ")
-    article_content = input("Enter article content: ")
+    article_content = input("Enter article content (min 100 chars): ")
+
+    # Validate article content length
+    if len(article_content) < 100:
+        print("Article content must be at least 100 characters.")
+        return
 
     # Connect to the database
     conn = get_db_connection()

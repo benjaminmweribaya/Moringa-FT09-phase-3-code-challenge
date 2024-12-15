@@ -1,4 +1,6 @@
 import sqlite3
+from models.article import Article
+from models.magazine import Magazine
 from database.connection import get_connection
 
 class Author:
@@ -49,21 +51,21 @@ class Author:
         connection = get_connection()
         cursor = connection.cursor()
         cursor.execute('''
-            SELECT * FROM articles
+            SELECT id FROM articles
             WHERE author_id = ?
         ''', (self.id,))
-        articles = cursor.fetchall()
+        article_ids = cursor.fetchall()
         connection.close()
-        return articles
+        return [Article(id=article_id[0]) for article_id in article_ids]
 
     def magazines(self):
         connection = get_connection()
         cursor = connection.cursor()
         cursor.execute('''
-            SELECT DISTINCT magazines.* FROM magazines
+            SELECT DISTINCT magazines.id FROM magazines
             JOIN articles ON magazines.id = articles.magazine_id
             WHERE articles.author_id = ?
         ''', (self.id,))
-        magazines = cursor.fetchall()
+        magazine_ids = cursor.fetchall()
         connection.close()
-        return magazines
+        return [Magazine(id=magazine_id[0]) for magazine_id in magazine_ids]

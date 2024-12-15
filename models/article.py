@@ -15,20 +15,20 @@ class Article:
                 raise ValueError("Magazine must be an instance of the Magazine class.")
             if not isinstance(title, str) or len(title) < 5 or len(title) > 50:
                 raise ValueError("Title must be a string between 5 and 50 characters.")
+            if not isinstance(content, str) or len(content) < 100:
+                raise ValueError("Content must be at least 100 characters long.")
 
-            if not hasattr(self, '_author'):
-                self._author = author
-            if not hasattr(self, '_magazine'):
-                self._magazine = magazine
-            if not hasattr(self, '_title'):
-                self._title = title
+            self._author = author
+            self._magazine = magazine
+            self._title = title
+            self._content = content
 
             connection = get_connection()
             cursor = connection.cursor()
             cursor.execute('''
-                INSERT INTO articles (author_id, magazine_id, title) 
-                VALUES (?, ?, ?)
-            ''', (self._author.id, self._magazine.id, self._title))
+                INSERT INTO articles (author_id, magazine_id, title, content) 
+                VALUES (?, ?, ?, ?)
+            ''', (self._author.id, self._magazine.id, self._title, self._content))
             connection.commit()
 
             self._id = cursor.lastrowid
