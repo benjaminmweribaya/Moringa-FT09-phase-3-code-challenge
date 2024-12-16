@@ -4,9 +4,36 @@ from models.article import Article
 from models.author import Author
 from models.magazine import Magazine
 
+def populate_test_data():
+    """Populate the database with initial test data."""
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    # Insert an author
+    cursor.execute("INSERT OR IGNORE INTO authors (id, name) VALUES (?, ?)", (1, "John Doe"))
+
+    # Insert a magazine
+    cursor.execute("INSERT OR IGNORE INTO magazines (id, name, category) VALUES (?, ?, ?)", (1, "Tech Weekly", "Technology"))
+
+    # Insert an article
+    cursor.execute(
+        "INSERT OR IGNORE INTO articles (id, title, content, author_id, magazine_id) VALUES (?, ?, ?, ?, ?)",
+        (1, "Test Title", "This is a sample article content that is over 100 characters long to meet the requirement.", 1, 1)
+    )
+
+    connection.commit()
+    connection.close()
+    print("Test data has been populated!")
+
 def main():
     # Initialize the database and create tables
     create_tables()
+
+    # Populate test data
+    populate_test_data()
+
+    # Continue with user interaction
+    print("Database initialized. Proceed with the application.")
 
     # Collect user input
     author_name = input("Enter author's name: ")
@@ -24,19 +51,18 @@ def main():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-
     '''
         The following is just for testing purposes, 
-        you can modify it to meet the requirements of your implmentation.
+        you can modify it to meet the requirements of your implementation.
     '''
 
     # Create an author
     cursor.execute('INSERT INTO authors (name) VALUES (?)', (author_name,))
-    author_id = cursor.lastrowid # Use this to fetch the id of the newly created author
+    author_id = cursor.lastrowid  # Use this to fetch the id of the newly created author
 
     # Create a magazine
-    cursor.execute('INSERT INTO magazines (name, category) VALUES (?,?)', (magazine_name, magazine_category))
-    magazine_id = cursor.lastrowid # Use this to fetch the id of the newly created magazine
+    cursor.execute('INSERT INTO magazines (name, category) VALUES (?, ?)', (magazine_name, magazine_category))
+    magazine_id = cursor.lastrowid  # Use this to fetch the id of the newly created magazine
 
     # Create an article
     cursor.execute('INSERT INTO articles (title, content, author_id, magazine_id) VALUES (?, ?, ?, ?)',
